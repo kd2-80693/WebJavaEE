@@ -1,0 +1,5 @@
+package dao;
+
+public class UserDaoClass extends Dao implements AutoCloseable{
+
+}

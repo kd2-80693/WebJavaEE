@@ -1,0 +1,12 @@
+package pojo;
+
+import java.sql.Date;
+
+public class Review {
+	int id;
+	int movie_id;
+	String review;
+	int user_id;
+	Date modified;
+		
+}

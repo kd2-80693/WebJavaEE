@@ -14,14 +14,12 @@ public class ReviewDaoClass extends Dao implements ReviewDao {
 	@Override
 	public int save(Review r) throws Exception {
 		int cnt = 0;
-		String sql = "insert into reviews values (?,?,?,?,?,? )";
+		String sql = "insert into reviews values (default,?,?,?,?,now() )";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
-			stmt.setInt(1, r.getId());
-			stmt.setInt(2, r.getMovie_id());
-			stmt.setString(3, r.getReview());
-			stmt.setInt(4, r.getRating());
-			stmt.setInt(5, r.getUser_id());
-			stmt.setDate(6, r.getModified());
+			stmt.setInt(1, r.getMovie_id());
+			stmt.setString(2, r.getReview());
+			stmt.setInt(3, r.getRating());
+			stmt.setInt(4, r.getUser_id());
 			cnt = stmt.executeUpdate();
 		}
 		return cnt;
@@ -30,14 +28,13 @@ public class ReviewDaoClass extends Dao implements ReviewDao {
 	@Override
 	public int update(Review r) throws Exception {
 		int cnt = 0;
-		String sql = "update reviews set movie_id = ? , review = ? ,rating = ? , user_id = ? , modified = ? where id = ?";
+		String sql = "update reviews set movie_id = ? , review = ? ,rating = ? , user_id = ? , modified = now() where id = ?";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
 			stmt.setInt(5, r.getId());
 			stmt.setInt(1, r.getMovie_id());
 			stmt.setString(2, r.getReview());
 			stmt.setInt(3, r.getRating());
 			stmt.setInt(4, r.getUser_id());
-			stmt.setDate(5, r.getModified());
 			cnt = stmt.executeUpdate();
 		}
 		return cnt;
@@ -95,7 +92,7 @@ public class ReviewDaoClass extends Dao implements ReviewDao {
 	@Override
 	public List<Review> getSharedWithUser(int userId) throws Exception {
 		List<Review> ls = new ArrayList<Review>();
-		String sql = "select * from reviews , shared  where id = user_id and user_id = ?";
+		String sql = "select * from reviews , shares  where id = user_id and user_id = ?";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
 			stmt.setInt(1, userId);
 			try(ResultSet rs = stmt.executeQuery())
@@ -156,7 +153,7 @@ public class ReviewDaoClass extends Dao implements ReviewDao {
 		String sql = "insert into shares values (? , ? )";
 		try (PreparedStatement stmt = con.prepareStatement(sql)){
 			stmt.setInt(1, reviewId);
-			stmt.setInt(1, userId);
+			stmt.setInt(2, userId);
 			cnt = stmt.executeUpdate();
 		}
 		return cnt;

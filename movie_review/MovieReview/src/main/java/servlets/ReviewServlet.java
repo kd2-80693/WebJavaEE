@@ -9,16 +9,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dao.MovieDaoClass;
 import dao.ReviewDaoClass;
 import pojo.Review;
+import pojo.User;
+
 @WebServlet("/review")
 public class ReviewServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		try(ReviewDaoClass rv = new ReviewDaoClass()) {
-			List<Review> list = rv.findAll();
+		try (ReviewDaoClass rv = new ReviewDaoClass()) {
+
 			resp.setContentType("text/html");
 			PrintWriter out = resp.getWriter();
 			out.println("<html>");
@@ -26,8 +29,20 @@ public class ReviewServlet extends HttpServlet {
 			out.println("<title>Reviews</title>");
 			out.println("</head>");
 			out.println("<body>");
-			out.println("<h5>Hello, User</h5> <br> <br>");
-			out.println("<a href = ''>All Reviews</a>   <a href = ''>My Reveiws</a>     <a href = ''>Shared Reviews</a> ");
+			HttpSession session = req.getSession();
+			User u = (User) session.getAttribute("user");
+			String type = req.getParameter("type");
+			out.printf("<h5>Hello, %s</h5>\r\n <br> <br>", u.getFirst_name());
+			out.println(
+					"<a href = 'review?type=all'>All Reviews     </a>   <a href = 'review?type=my'>    My Reveiws    </a>     <a href = 'review?type=shared'>   Shared Reviews    </a>  <br> <br>");
+			if (type == null || type.equals("all")) {
+				out.println("<h1>All Reviews</h1>");
+			} else if (type.equals("my")) {
+				out.println("<h1>My Reviews</h1>");
+			} else {
+				out.println("<h1>Shared Reviews</h1>");
+			}
+
 			out.println("<table border='1'>");
 			out.println("<thead>");
 			out.println("<th>Id</th>");
@@ -37,32 +52,100 @@ public class ReviewServlet extends HttpServlet {
 			out.println("<th>Actions</th>");
 			out.println("</thead>");
 			out.println("<tbody>");
-			for (Review r : list) {
-				out.println("<tr>");
-				out.printf("<td>%s</td>\r\n", r.getId());
-				try(MovieDaoClass mv = new MovieDaoClass())
-				{
-					out.printf("<td>%s</td>\r\n", mv.findById(r.getMovie_id()).getTitle());
-				}catch (Exception e) {
-					e.printStackTrace();
-					throw new ServletException(e);
+
+			if (type == null || type.equals("all")) {
+
+				List<Review> list = rv.findAll();
+				for (Review r : list) {
+					out.println("<tr>");
+					out.printf("<td>%s</td>\r\n", r.getId());
+					try (MovieDaoClass mv = new MovieDaoClass()) {
+						out.printf("<td>%s</td>\r\n", mv.findById(r.getMovie_id()).getTitle());
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new ServletException(e);
+					}
+					out.printf("<td>%s</td>\r\n <br>", r.getRating());
+					out.printf("<td>%s</td>\r\n", r.getReview());
+					if (r.getUser_id() == u.getId()) {
+						out.printf(
+								"<td><a href='edit?id=%s'><img src='edit.png' alt='EDIT' height='24'  width = '24' /></a>  <a href = 'delete?id=%s' ><img src = 'delete.png' height = '24' width = '24' alt = 'Delete' /></a> <a href = 'share?id=%s' ><img src = 'share.png' height = '24' width = '24' alt='Update' /></a></td>\r\n",
+								r.getId(), r.getId(),r.getId());
+					} else {
+						out.printf(
+								"<td><img src = 'cantEdit.png' alt='EDIT' height='24'  width = '24' >  <img src = 'cantDel.png'  height = '24' width = '24' alt = 'Delete' > <img src = 'cantShare.png'  height = '24' width = '24' alt = 'Update'></td>\r\n");
+					}
+					out.println("</tr>");
 				}
-				out.printf("<td>%s</td>\r\n", r.getRating());
-				out.printf("<td>%s</td>\r\n", r.getReview());
-				out.printf("<td>action action</td>\r\n");
-				out.println("</tr>");
+
+				out.println("</tbody>");
+				out.println("</table> <br>");
+				out.println("<a href = 'new_review'>Add Review</a>    <a href = 'logout'>Sign-Out</a> ");
+				out.println("</body>");
+				out.println("</html>");
+			} else if (type.equals("my")) {
+				List<Review> list = rv.findByUserId(u.getId());
+				for (Review r : list) {
+					out.println("<tr>");
+					out.printf("<td>%s</td>\r\n", r.getId());
+					try (MovieDaoClass mv = new MovieDaoClass()) {
+						out.printf("<td>%s</td>\r\n", mv.findById(r.getMovie_id()).getTitle());
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new ServletException(e);
+					}
+					out.printf("<td>%s</td>\r\n <br>", r.getRating());
+					out.printf("<td>%s</td>\r\n", r.getReview());
+					if (r.getUser_id() == u.getId()) {
+						out.printf(
+								"<td><a href='edit?id=%s'><img src='edit.png' alt='EDIT' height='24'  width = '24' /></a>  <a href = 'delete?id=%s' ><img src = 'delete.png' height = '24' width = '24' alt = 'Delete' /></a> <a href = 'share?id=%s' ><img src = 'share.png' height = '24' width = '24' alt='Update' /></a></td>\r\n",
+								r.getId(), r.getId(),r.getId());
+					} else {
+						out.printf(
+								"<td><img src = 'cantEdit.png' alt='EDIT' height='24'  width = '24' >  <img src = 'cantDel.png'  height = '24' width = '24' alt = 'Delete' > <img src = 'cantShare.png'  height = '24' width = '24' alt = 'Update'></td>\r\n");
+					}
+					out.println("</tr>");
+				}
+
+				out.println("</tbody>");
+				out.println("</table> <br>");
+				out.println("<a href = 'new_review'>Add Review</a>    <a href = 'logout'>Sign-Out</a> ");
+				out.println("</body>");
+				out.println("</html>");
+			} else {
+				List<Review> list = rv.getSharedWithUser(u.getId());
+				for (Review r : list) {
+					out.println("<tr>");
+					out.printf("<td>%s</td>\r\n", r.getId());
+					try (MovieDaoClass mv = new MovieDaoClass()) {
+						out.printf("<td>%s</td>\r\n", mv.findById(r.getMovie_id()).getTitle());
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new ServletException(e);
+					}
+					out.printf("<td>%s</td>\r\n <br>", r.getRating());
+					out.printf("<td>%s</td>\r\n", r.getReview());
+					if (r.getUser_id() == u.getId()) {
+						out.printf(
+								"<td><a href='edit?id=%s'><img src='edit.png' alt='EDIT' height='24'  width = '24' /></a>  <a href = 'delete?id=%s' ><img src = 'delete.png' height = '24' width = '24' alt = 'Delete' /></a> <a href = 'share?id=%s' ><img src = 'share.png' height = '24' width = '24' alt='Update' /></a></td>\r\n",
+								r.getId(), r.getId(),r.getId());
+					} else {
+						out.printf(
+								"<td><img src = 'cantEdit.png' alt='EDIT' height='24'  width = '24' >  <img src = 'cantDel.png'  height = '24' width = '24' alt = 'Delete' > <img src = 'cantShare.png'  height = '24' width = '24' alt = 'Update'></td>\r\n");
+					}
+					out.println("</tr>");
+				}
+
+				out.println("</tbody>");
+				out.println("</table> <br>");
+				out.println("<a href = 'new_review'>Add Review</a>    <a href = 'logout'>Sign-Out</a> ");
+				out.println("</body>");
+				out.println("</html>");
 			}
-			out.println("<a href = 'new_review'>Add Review</a>    <a href = 'logout'>Sign-Out</a> ");
-			out.println("</tbody>");
-			out.println("</table>");
-			out.println("<a href='logout'>Sign Out</a>");
-			out.println("</body>");
-			out.println("</html>");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ServletException(e);
 		}
-		
-		
+
 	}
 }

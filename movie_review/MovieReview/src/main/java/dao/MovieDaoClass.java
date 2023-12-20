@@ -20,7 +20,7 @@ public class MovieDaoClass extends Dao implements MovieDao{
 				while(rs.next()) {
 					int id = rs.getInt("id");
 					String title  = rs.getString("title");
-					Date release = rs.getDate("release_date");
+					Date release = rs.getDate("rel_date");
 					list.add(new Movie(id,title,release));
 				}
 			}
@@ -39,7 +39,7 @@ public class MovieDaoClass extends Dao implements MovieDao{
 			try(ResultSet rs = st.executeQuery()){
 				while(rs.next()) {
 					String title  = rs.getString("title");
-					Date release = rs.getDate("release_date");
+					Date release = rs.getDate("rel_date");
 					m = new Movie(id,title,release);
 				}
 			}

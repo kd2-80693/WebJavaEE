@@ -85,14 +85,16 @@ public class UserDaoClass extends Dao implements UserDao {
 		String sql = "select * from users";
 		try (PreparedStatement stmt = con.prepareStatement(sql)) {
 			try (ResultSet rs = stmt.executeQuery()) {
-				int id = rs.getInt("id");
-				String first_name = rs.getString("first_name");
-				String last_name = rs.getString("last_name");
-				String email = rs.getString("email");
-				String password = rs.getString("password");
-				String mobile = rs.getString("mobile");
-				Date birth = rs.getDate("birth");
-				list.add(new User(id, first_name, last_name, email, mobile, birth, password));
+				while (rs.next()) {
+					int id = rs.getInt("id");
+					String first_name = rs.getString("first_name");
+					String last_name = rs.getString("last_name");
+					String email = rs.getString("email");
+					String password = rs.getString("password");
+					String mobile = rs.getString("mobile");
+					Date birth = rs.getDate("birth");
+					list.add(new User(id, first_name, last_name, email, mobile, birth, password));
+				}
 			}
 		}
 		return list;

@@ -1,4 +1,4 @@
-package dao;
+package com.sunbeam.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -6,7 +6,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import pojo.Review;
+import com.sunbeam.pojos.Review;
+
 
 public class ReviewDaoClass extends Dao implements ReviewDao {
 

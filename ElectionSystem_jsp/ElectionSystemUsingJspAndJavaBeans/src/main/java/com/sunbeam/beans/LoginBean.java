@@ -1,7 +1,7 @@
 package com.sunbeam.beans;
 
-import com.sunbeam.dao.UserDao;
-import com.sunbeam.dao.UserDaoClass;
+import com.sunbeam.daos.UserDao;
+import com.sunbeam.daos.UserDaoImpl;
 import com.sunbeam.pojos.User;
 
 public class LoginBean {
@@ -40,7 +40,7 @@ public class LoginBean {
 
 	public void authenticate()
 	{
-		try(UserDao user = new UserDaoClass())
+		try(UserDao user = new UserDaoImpl())
 		{
 			User u = user.findByEmail(email);
 			if(u!=null && u.getPassword().equals(password)) {

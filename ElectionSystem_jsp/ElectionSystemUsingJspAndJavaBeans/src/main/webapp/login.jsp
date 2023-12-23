@@ -8,7 +8,7 @@
 <title>Authentication</title>
 </head>
 <body>
-	<jsp:useBean id="lb" class = "com.sunbeam.beans.LoginBean"></jsp:useBean>
+	<jsp:useBean id="lb" class = "com.sunbeam.beans.LoginBean" scope="session"></jsp:useBean>
 	<jsp:setProperty property="*" name = "lb" />
 	${lb.authenticate()}
 	<c:choose>
@@ -16,10 +16,10 @@
 			<img alt="INVALID CREDENTIALS Try Again" src="InvalidCredentials.png">
 			<a href="index.jsp">Login Again</a>
 		</c:when>
-		<c:when test="${lb.user.role.ea'admin' }">
+		<c:when test="${lb.user.role == 'voter' }">
 			<c:redirect url = "candList.jsp"></c:redirect>
 		</c:when>
-		<c:when test="${lb.user.role == 'voter' }">
+		<c:when test="${lb.user.role == 'admin' }">
 			<c:redirect url = "result.jsp" />
 		</c:when>
 		<c:otherwise>

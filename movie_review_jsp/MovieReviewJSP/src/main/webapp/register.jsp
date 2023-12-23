@@ -9,9 +9,10 @@
 <body>
 	<jsp:useBean id="ru" class ="com.sunbeam.beans.RegisterBean"></jsp:useBean>
 	<jsp:setProperty property="*" name="ru"/>
-	<%
-	ru.registerUser();
-	%>
+	${ru.registerUser()}
+	
+	
+	
 	<%
 	if(ru.getStatus())
 	{

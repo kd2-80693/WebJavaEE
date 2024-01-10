@@ -1,0 +1,8 @@
+pojos\BaseEntity.class
+pojos\Player.class
+daos\TeamDaoImpl.class
+com\app\pojos\Teams.class
+pojos\Team.class
+daos\TeamsDao.class
+beans\TeamBean.class
+utils\HibernateUtils.class

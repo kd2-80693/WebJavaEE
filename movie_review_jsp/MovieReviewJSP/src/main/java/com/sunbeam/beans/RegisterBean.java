@@ -15,6 +15,7 @@ public class RegisterBean {
 	String birth;
 	String password;
 	boolean status;
+	
 	public boolean getStatus() {
 		return status;
 	}
